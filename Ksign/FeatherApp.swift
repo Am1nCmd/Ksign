@@ -84,6 +84,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         _createPipeline()
         _createSourcesDirectory()
+        UserDefaults.standard.register(defaults: [
+            "Feather.installationMethod": 0,
+            "Feather.serverMethod": 1,
+            "Feather.ipFix": true
+        ])
         if !UserDefaults.standard.bool(forKey: "hasInitializedBuiltInSources") {
             _initializeBuiltInSources()
             UserDefaults.standard.set(true, forKey: "hasInitializedBuiltInSources")

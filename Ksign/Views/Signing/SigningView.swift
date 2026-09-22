@@ -24,6 +24,7 @@ struct SigningView: View {
 	@State private var _isLogsPresenting = false
 	@State private var _isSigning = false
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
+	@State private var _minimumOSVersion: String?
 	@State var appIcon: UIImage?
 	
 	var signAndInstall: Bool = false
@@ -127,6 +128,8 @@ struct SigningView: View {
 			.animation(.smooth, value: _isSigning)
 		}
 		.onAppear {
+			_readMinimumOSVersion(for: app)
+			
 			// ppq protection
 			if
 				_optionsManager.options.ppqProtection,
@@ -214,6 +217,10 @@ extension SigningView {
 					bindingValue: $_temporaryOptions.appVersion
 				)
 			}
+			
+			LabeledContent(.localized("Minimum OS")) {
+				Text(_minimumOSVersion ?? .localized("Unknown"))
+			}
 		}
 	}
 	
@@ -271,6 +278,15 @@ extension SigningView {
 				.navigationTitle(.localized("Properties"))
 			}
 		}
+	}
+	
+	private func _readMinimumOSVersion(for app: AppInfoPresentable) {
+		guard
+			let appDirectory = Storage.shared.getAppDirectory(for: app),
+			let infoPlist = NSDictionary(contentsOf: appDirectory.appendingPathComponent("Info.plist")),
+			let minimumOSVersion = infoPlist["MinimumOSVersion"] as? String
+		else { return }
+		_minimumOSVersion = minimumOSVersion
 	}
 	
 	@ViewBuilder
