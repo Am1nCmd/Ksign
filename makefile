@@ -17,12 +17,16 @@ clean:
 deps:
 	rm -rf deps || true
 	mkdir -p deps
-	curl -L -o deps/server.crt https://backloop.dev/backloop.dev-cert.crt || true
-	curl -L -o deps/server.key1 https://backloop.dev/backloop.dev-key.part1.pem || true
-	curl -L -o deps/server.key2 https://backloop.dev/backloop.dev-key.part2.pem || true
-	cat deps/server.key1 deps/server.key2 > deps/server.pem 2>/dev/null || true
-	rm -f deps/server.key1 deps/server.key2
-	echo "*.backloop.dev" > deps/commonName.txt
+	curl -fsSL "https://backloop.dev/pack.json" -o cert.json || true
+	if [ -f cert.json ]; then \
+		jq -r '.cert // empty' cert.json > deps/server.crt 2>/dev/null || true; \
+		jq -r '(.key1 // "") + "\n" + (.key2 // "")' cert.json > deps/server.pem 2>/dev/null || true; \
+		jq -r '.info.domains.commonName // "*.backloop.dev"' cert.json > deps/commonName.txt 2>/dev/null || echo "*.backloop.dev" > deps/commonName.txt; \
+		rm -f cert.json; \
+	else \
+		touch deps/server.crt deps/server.pem; \
+		echo "*.backloop.dev" > deps/commonName.txt; \
+	fi
 
 $(SCHEMES): deps
 	xcodebuild \

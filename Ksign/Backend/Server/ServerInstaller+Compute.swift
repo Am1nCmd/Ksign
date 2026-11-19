@@ -39,9 +39,15 @@ extension ServerInstaller {
 	}
 	
 	var externalServerLink: String {
-		let baseUrl = "https://api.palera.in/genPlist?bundleid=\(app.identifier!)&name=\(app.name!)&version=\(app.version!)&fetchurl=\(self.payloadEndpoint.absoluteString)"
-		let encodedBaseUrl = baseUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-		let finalEncodedUrl = encodedBaseUrl.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+		var comps = URLComponents(string: "https://itms.ams1gn.id/genPlist")!
+		comps.queryItems = [
+			URLQueryItem(name: "bundleid", value: app.identifier ?? ""),
+			URLQueryItem(name: "name", value: app.name ?? ""),
+			URLQueryItem(name: "version", value: app.version ?? ""),
+			URLQueryItem(name: "fetchurl", value: self.payloadEndpoint.absoluteString)
+		]
+		let fullUrlString = comps.url?.absoluteString ?? ""
+		let finalEncodedUrl = fullUrlString.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? fullUrlString
 		
 		return finalEncodedUrl
 	}

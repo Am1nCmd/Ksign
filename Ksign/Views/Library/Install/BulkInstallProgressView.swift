@@ -37,10 +37,9 @@ struct BulkInstallProgressView: View {
         }
         .onReceive(viewModel.$status) { newStatus in
             if case .ready = newStatus {
-                if _serverMethod == 0 {
-                    UIApplication.shared.open(URL(string: installer.iTunesLink)!)
-                } else if _serverMethod == 1 {
-                    _isWebviewPresenting = true
+                let targetUrlString = _serverMethod == 0 ? installer.iTunesLink : installer.iTunesLinkExternal
+                if let url = URL(string: targetUrlString) {
+                    UIApplication.shared.open(url)
                 }
             }
             

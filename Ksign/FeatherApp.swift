@@ -89,6 +89,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             "Feather.serverMethod": 1,
             "Feather.ipFix": true
         ])
+        if UserDefaults.standard.integer(forKey: "Feather.serverMethod") == 0 {
+            UserDefaults.standard.set(1, forKey: "Feather.serverMethod")
+        }
         if !UserDefaults.standard.bool(forKey: "hasInitializedBuiltInSources") {
             _initializeBuiltInSources()
             UserDefaults.standard.set(true, forKey: "hasInitializedBuiltInSources")
